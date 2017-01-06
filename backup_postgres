@@ -1,0 +1,14 @@
+#!/bin/bash
+# Location to place backups.
+# crontab -e
+# 0 3 * * * SCRIPT_PATH
+backup_dir="/var/lib/postgresql/backups/"
+backup_date=`date +%Y-%m-%d`
+number_of_days=30
+databases=`psql -l -t | cut -d'|' -f1 | sed -e 's/ //g' -e '/^$/d' | sed '/:/d'`
+for i in $databases; do
+  if [ "$i" != "template0" ] && [ "$i" != "template1" ] && [ "$i" != "postgres" ] ; then 
+    pg_dump -Ft $i > $backup_dir$i\_$backup_date.tar
+  fi
+done
+find $backup_dir -type f -prune -mtime +$number_of_days -exec rm -f {} \;

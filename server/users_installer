@@ -1,0 +1,22 @@
+#!/bin/bash
+# Ubuntu 16.04
+# execute as root
+useradd -m prod
+echo -e "prod\nprod" | (passwd prod)
+useradd -m test
+echo -e "test\ntest" | (passwd test)
+mkdir /var/log/odoo
+touch /var/log/odoo/odoo-prod.log
+chown prod /var/log/odoo/odoo-prod.log
+touch /var/log/odoo/odoo-test.log
+chown test /var/log/odoo/odoo-test.log
+mkdir /home/prod/odoo-prod
+mkdir /home/prod/odoo-prod/backups
+mkdir /home/prod/odoo-prod/custom-addons
+mkdir /home/prod/odoo-prod/custom-addons/external-addons
+chown -R prod /home/prod
+mkdir /home/test/odoo-test
+mkdir /home/test/odoo-test/backups
+mkdir /home/test/odoo-test/custom-addons
+mkdir /home/test/odoo-test/custom-addons/external-addons
+chown -R test /home/test

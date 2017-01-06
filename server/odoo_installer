@@ -1,0 +1,7 @@
+#!/bin/bash
+# Ubuntu 16.04
+# execute as root
+git clone --single-branch http://github.com/odoo/odoo -b 8.0 /home/prod/odoo-prod/odoo
+chown prod -R /home/prod/odoo-prod/odoo
+cp odoo -R /home/test/odoo-test/
+chown test /home/test/odoo-test/odoo
