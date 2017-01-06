@@ -1,0 +1,26 @@
+#!/bin/bash
+# Ubuntu 16.04
+# execute as root
+git clone --single-branch http://github.com/odoo/odoo -b 8.0 /home/prod/odoo-prod/odoo
+chown prod -R /home/prod/odoo-prod/odoo
+cp -R /home/prod/odoo-prod/odoo /home/test/odoo-test/odoo
+chown test /home/test/odoo-test/odoo
+/home/prod/odoo-prod/odoo/odoo.py setup_deps
+service postgresql start
+/home/prod/odoo-prod/odoo/odoo.py setup_pg
+runuser -l postgres -c "createuser -d -U postgres prod"
+runuser -l postgres -c "createuser -d -U postgres test"
+echo "\password postgres"
+echo "\password prod"
+echo "\password test"
+runuser -l postgres -c psql
+echo "password postgres"
+passwd postgres
+cp daemons/odoo-prod /etc/init.d/
+chown prod /etc/init.d/odoo-prod
+cp daemons/odoo-test /etc/init.d/
+chown test /etc/init.d/odoo-test
+cp configs/odoo-prod.conf /home/prod/odoo-prod/
+chown prod /home/prod/odoo-prod/odoo-prod.conf
+cp configs/odoo-test.conf /home/test/odoo-test/
+chown test /home/test/odoo-test/odoo-test.conf

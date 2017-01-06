@@ -1,5 +1,6 @@
 #!/bin/bash
 # Location to place backups.
+# su - postgres
 # crontab -e
 # 0 3 * * * SCRIPT_PATH
 backup_dir="/var/lib/postgresql/backups/"
