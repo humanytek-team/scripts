@@ -6,3 +6,5 @@ chown prod -R /home/prod/odoo-prod/odoo
 cp odoo -R /home/test/odoo-test/
 chown test /home/test/odoo-test/odoo
 service postgresql start
+runuser -l prod -c /home/prod/odoo-prod/odoo/odoo.py setup_deps
+runuser -l prod -c /home/prod/odoo-prod/odoo/odoo.py setup_pg
