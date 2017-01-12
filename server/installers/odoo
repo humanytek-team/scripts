@@ -4,7 +4,7 @@
 git clone --single-branch http://github.com/odoo/odoo -b 8.0 /home/prod/odoo-prod/odoo
 chown prod -R /home/prod/odoo-prod/odoo
 cp -R /home/prod/odoo-prod/odoo /home/test/odoo-test/odoo
-chown test /home/test/odoo-test/odoo
+chown test -R /home/test/odoo-test/odoo
 /home/prod/odoo-prod/odoo/odoo.py setup_deps
 service postgresql start
 /home/prod/odoo-prod/odoo/odoo.py setup_pg
