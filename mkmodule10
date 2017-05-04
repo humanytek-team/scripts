@@ -1,0 +1,129 @@
+#!/usr/bin/env python
+import argparse
+import sys
+import os
+import shutil
+
+license = "# -*- coding: utf-8 -*-"
+license += """
+############################################################################
+#    Coded by: Humanytek-Team (https://github.com/humanytek-team)
+############################################################################
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+"""
+
+parser = argparse.ArgumentParser()
+parser.add_argument('NAME_SPACES')
+parser.add_argument('-m', '--models', action='store_true')
+parser.add_argument('-s', '--security', action='store_true')
+parser.add_argument('-v', '--views', action='store_true')
+args = parser.parse_args()
+
+
+name_spaces = args.NAME_SPACES
+name_underscore = name_spaces.lower().replace(' ', '_')
+name_dots = name_underscore.replace('_', '.')
+name_pascal = name_spaces.replace(' ', '')
+
+if os.path.isdir(name_underscore):
+    print('The module ' + name_underscore + ' is already exist')
+    sys.exit(1)
+
+os.mkdir(name_underscore)
+os.mkdir(name_underscore + '/static')
+os.mkdir(name_underscore + '/static/description')
+shutil.copy(os.path.dirname(sys.argv[0]) + '/icon.png', name_underscore + '/static/description')
+
+ignore_file = open(name_underscore + '/.gitignore', 'w')
+ignore_file.write("# Python binary\n")
+ignore_file.write("*.pyc\n")
+ignore_file.close()
+
+if (args.models):
+    init_file = open(name_underscore + '/__init__.py', 'w')
+    init_file.write(license)
+    init_file.write('from . import models\n')
+    init_file.close()
+
+manifest_file = open(name_underscore + '/__manifest__.py', 'w')
+manifest_file.write(license)
+manifest_file.write("{\n")
+manifest_file.write("    'name': '" + name_spaces + "',\n")
+manifest_file.write("    'version': '1.0',\n")
+manifest_file.write("    'author': 'Humanytek',\n")
+manifest_file.write("    'website': 'http://humanytek.com',\n")
+manifest_file.write("    'depends': [],  # TODO [IMP]\n")
+manifest_file.write("    'data': [\n")
+if (args.security):
+    manifest_file.write("        'security/ir.model.access.csv',\n")
+    manifest_file.write("        'security/" + name_underscore + "_access_rules.xml',\n")
+if (args.views):
+    manifest_file.write("        'views/" + name_underscore + ".xml',\n")
+manifest_file.write("    ]\n")
+manifest_file.write("}\n")
+manifest_file.close()
+
+readme_file = open(name_underscore + '/README.md', 'w')
+readme_file.write('# ' + name_spaces + "\n")
+readme_file.write("\n")
+readme_file.write("TODO [IMP]\n")
+readme_file.close()
+
+if (args.models):
+    os.mkdir(name_underscore + '/models')
+    init_file = open(name_underscore + '/models/__init__.py', 'w')
+    init_file.write(license)
+    init_file.write("from . import " + name_underscore + "\n")
+    init_file.close()
+    model_file = open(name_underscore + '/models/' + name_underscore + '.py', 'w')
+    model_file.write("from odoo import api, fields, models\n")
+    model_file.write("\n")
+    model_file.write("\n")
+    model_file.write("class " + name_pascal + "(models.Model):\n")
+    model_file.write("    _name = '" + name_dots + "'\n")
+    model_file.close()
+
+if (args.security):
+    os.mkdir(name_underscore + '/security')
+    ir_file = open(name_underscore + '/security/ir.model.access.csv', 'w')
+    ir_file.write("id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink\n")
+    ir_file.write("access_" + name_underscore + "_group_user," + name_dots + ".user,model_" + name_underscore + ",base.group_user,1,1,1,1\n")
+    ir_file.close()
+    rules_file = open(name_underscore + '/security/' + name_underscore + '_access_rules.xml', 'w')
+    rules_file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    rules_file.write('<odoo>\n')
+    rules_file.write('    <data noupdate="1">\n')
+    rules_file.write('        <record id="' + name_underscore + '_user_rule" model="ir.rule">\n')
+    rules_file.write('            <field name="name"> <!--- TODO --> </field>\n')
+    rules_file.write('            <field name="model_id" ref="model_' + name_underscore + '"/>\n')
+    rules_file.write('            <!--- TODO [IMP] -->\n')
+    rules_file.write('        </record>\n')
+    rules_file.write('    </data>\n')
+    rules_file.write('</odoo>\n')
+    rules_file.close()
+
+if (args.views):
+    os.mkdir(name_underscore + '/views')
+    view_file = open(name_underscore + '/views/' + name_underscore + '.xml', 'w')
+    view_file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    view_file.write('<odoo>\n')
+    view_file.write('    <data>\n')
+    view_file.write('        <!--- TODO [IMP] -->\n')
+    view_file.write('    </data>\n')
+    view_file.write('</odoo>\n')
+    view_file.close()
