@@ -1,0 +1,108 @@
+#!/bin/bash
+
+source_code[8]='/opt/odoo8-sc/'
+source_code[9]='/opt/odoo9-sc/'
+source_code[91]='/opt/odoo9e-sc/'
+source_code[10]='/opt/odoo10-sc/'
+source_code[101]='/opt/odoo10e-sc/'
+inst_dir='/opt/'
+admin_user='htk'
+log_dir='/var/log/odoo/'
+config_dir='/etc/'
+
+usage() { 
+    echo "Usage: $0 -n <NAME> -v <8-10> [-e] -p <PORT>"
+    exit 1
+}
+
+while getopts ":n:v:p:" o; do
+    case "${o}" in
+        n)
+            name=${OPTARG}
+            ;;
+        p)
+            port=${OPTARG}
+            if [ $port -lt 1 ] || [ $port -gt 49151 ]; then
+                echo "out of range"
+                exit 1
+            fi
+            ;;
+        v)
+            version=${OPTARG}
+            ((version >= 8 && version <= 10)) || usage
+            ;;
+        e)
+            if [ $version -gt 9 ] && [ $version -lt 10 ]; then
+                enterprise=1
+            else
+                echo "No enterprise module for $version version"
+                exit 1
+            fi
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+if [ -z "${name}" ] || [ -z "${version}" ] || [ -z "${port}" ]; then
+    usage
+fi
+
+if [ ! -d $inst_dir$name ]; then
+    apt-get install rpl -y
+    
+    adduser --system --home=$inst_dir$name --group $name
+    chmod g+rwx $inst_dir$name
+    adduser $admin_user $name
+    sudo -u postgres createuser -dERS $name
+
+    cp -r ${source_code[$version]} $inst_dir$name/odoo
+    chown -R $admin_user:$name $inst_dir$name/odoo
+    addons_path=$inst_dir$name'/odoo/addons/'
+    if [ $enterprise ]; then
+        cp -r ${source_code[$version$enterprise]} $inst_dir$name'/enterprise'
+        addons_path=$addons_path','$inst_dir$name'/enterprise/'
+    fi
+
+    mkdir -p $log_dir
+    touch $log_dir$name.log
+    chown $name $log_dir$name.log
+    chgrp $name $log_dir$name.log
+    chmod g+rwx $log_dir$name.log
+
+    mkdir -p $config_dir
+    touch $config_dir$name.conf
+    chown $name $config_dir$name.conf
+    chgrp $name $config_dir$name.conf
+    chmod g+rwx $config_dir$name.conf
+    cp config $config_dir$name.conf
+    rpl _NAME $name $config_dir$name.conf
+    rpl _LOG_DIR $log_dir $config_dir$name.conf
+    rpl _PORT $port $config_dir$name.conf
+    rpl _ADDONS_PATH $addons_path $config_dir$name.conf
+
+    mkdir -p '/etc/init.d/'
+    touch '/etc/init.d'/$name
+    chown $name '/etc/init.d'/$name
+    chgrp $name '/etc/init.d'/$name
+    chmod g+rwx '/etc/init.d'/$name
+    if [ $version -lt 10 ]; then
+        exec_file=$inst_dir$name'/odoo/openerp-server'
+    else
+        exec_file=$inst_dir$name'/odoo/odoo.py'
+    fi
+    cp daemon '/etc/init.d/'$name
+    chmod +x '/etc/init.d/'$name
+    rpl _NAME $name '/etc/init.d/'$name
+    rpl _EXEC_FILE $exec_file '/etc/init.d/'$name
+    rpl _CONFIG_DIR $config_dir$name.conf '/etc/init.d/'$name
+    
+    echo "Instance created"
+    echo "If you want auto start, do: systemctl enable $name"
+else
+    echo "That instance already exist"
+    exit 1
+fi

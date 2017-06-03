@@ -1,0 +1,5 @@
+apt-get update -y
+apt-get upgrade -y
+apt-get install bash-completion python python-pip sudo postgresql libpq-dev libxml2-dev libxslt1-dev libldap2-dev libsasl2-dev -y
+pip install --upgrade pip
+pip install --upgrade virtualenv 
