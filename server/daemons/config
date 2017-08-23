@@ -1,6 +1,0 @@
-[options]
-db_user = _NAME
-db_password = $PASSWORD
-logfile = _LOG_DIR
-xmlrpc_port = _PORT
-addons_path = _ADDONS_PATH

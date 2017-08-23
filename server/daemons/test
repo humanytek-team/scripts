@@ -1,8 +1,0 @@
-#!/bin/bash
-
-source_code[8]='hola'
-source_code[81]='adios'
-version=8
-enterprise=1
-
-echo ${source_code[$version$enterprise]}

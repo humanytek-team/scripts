@@ -1,0 +1,62 @@
+apt-get update -y
+apt-get upgrade -y
+apt-get install bash-completion git python python-pip sudo vim postgresql -y
+# Dependencias Odoo
+apt-get install libpq-dev python-dev libxml2-dev libxslt-dev libevent-dev libsasl2-dev libldap2-dev libjpeg-dev node-less -y
+# Dependencias MX
+apt-get install xmlstarlet libzbar-dev -y
+pip install --upgrade pip
+pip install --upgrade virtualenv
+# Dependencias Odoo
+pip install pbr funcsigs
+# Dependencias MX
+pip install xmltodict M2Crypto simplejson SOAPpy qrtools zbar
+
+adduser --system --home=/opt/odoo --group odoo
+
+su postgres
+createuser -deEPRS odoo
+
+psql
+\password postgres
+update pg_database set datallowconn = TRUE where datname = 'template0';
+\c template0
+update pg_database set datistemplate = FALSE where datname = 'template1';
+drop database template1;
+create database template1 with template = template0 encoding = 'UTF8';
+update pg_database set datistemplate = TRUE where datname = 'template1';
+\c template1
+update pg_database set datallowconn = FALSE where datname = 'template0';
+\q
+exit
+
+cd /opt/odoo
+git clone --single-branch https://github.com/odoo/odoo/ -b 10.0
+mkdir /opt/odoo/addons
+cd /opt/odoo/addons
+# git clone https://github.com/odoo/enterprise
+mkdir /opt/odoo/addons/external
+cd /opt/odoo/addons/external
+git clone https://github.com/humanytek/mx
+
+cd /opt/odoo/odoo
+pip install -r requirements.txt
+
+apt-get install -y npm
+ln -s /usr/bin/nodejs /usr/bin/node
+npm install -g less
+
+# Crear /etc/odoo.conf
+chown odoo /etc/odoo.conf
+# Crear /etc/init.d/odoo
+chown odoo /etc/init.d/odoo
+touch /var/log/odoo.log
+chown odoo /var/log/odoo.log
+
+mkdir /backups
+chown odoo /backups
+touch /var/log/odoo-backups.log
+chown odoo /var/log/odoo-backups.log
+# Copiar backups script
+# crontab backups
+# 03 03 * * * /opt/odoo/tools/backups

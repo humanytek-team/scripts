@@ -1,0 +1,11 @@
+#!/bin/bash
+
+dbfilename=$1
+dbowner='odoo'
+dbname=$2
+
+createdb -O $dbowner $dbname
+echo "$dbname created"
+pg_restore -i -v -d $dbname -O $dbfilename
+
+exit 0

@@ -1,6 +1,0 @@
-#!/bin/bash
-# Ubuntu 16.04
-# execute as root
-installers/basics
-installers/users
-installers/odoo

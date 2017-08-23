@@ -1,27 +1,25 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:             _NAME
+# Provides:             odoo
 # Required-Start:       $remote_fs $syslog
 # Required-Stop:        $remote_fs $syslog
 # Should-Start:         $network
 # Should-Stop:          $network
 # Default-Start:        2 3 4 5
 # Default-Stop:         0 1 6
-# Short-Description:    Enterprise Resource Management software
-# Description:          Open ERP is a complete ERP and CRM software.
+# Short-Description:    Odoo 10
+# Description:          Odoo 10 
 ### END INIT INFO
 
 PATH=/bin:/sbin:/usr/bin
-DAEMON=_EXEC_FILE
-NAME=_NAME
-DESC=_NAME
+DAEMON=/opt/odoo/odoo/odoo-bin
+NAME=odoo
+DESC=odoo
 
-# Specify the user name (Default: openerp).
-USER=_NAME
+USER=odoo
 
-# Specify an alternate config file (Default: /etc/openerp-server.conf).
-CONFIGFILE="_CONFIG_DIR"
+CONFIGFILE="/etc/odoo.conf"
 
 # pidfile
 PIDFILE=/var/run/$NAME.pid
