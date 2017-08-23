@@ -1,0 +1,21 @@
+#!/bin/bash
+# Create the file /var/lib/postgresql/.pgpass with a single line (postgres role password) (Set security to only read by owner)
+# Execute as postgres
+
+export PGPASSWORD=`cat /var/lib/postgresql/.pgpass`
+bk_dir="/backups/local/"
+date=`date +%Y_%m_%d`
+exp_days=30
+dbs=`psql -l -w -U postgres | grep UTF8 | grep -v postgres | grep -v template0 | grep -v template1 | grep -v TEST | grep -v demo | grep -v test | grep -v desa_* |cut -d" " -f2`
+log='/var/log/odoo/backups_local.log'
+
+for db in $dbs; do
+  pg_dump -Ft $db > $bk_dir$db\_$date.tar
+  if [ `echo $?` == 0 ];then
+      echo "DONE - $db at $date" >> $log
+  else
+      echo "FAIL - $db at $date" >> $log
+  fi
+done
+
+find $bk_dir -type f -prune -mtime +$exp_days -exec rm -f {} \;
