@@ -1,3 +1,5 @@
+#!/bin/bash
+
 bk_dir="/backups"
 date=`date +%Y_%m_%d`
 exp_days=30
