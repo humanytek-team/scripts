@@ -1,0 +1,40 @@
+apt-get update -y
+apt-get upgrade -y
+
+apt-get install bash-completion git python3 python3-pip sudo vim postgresql -y
+
+apt-get install libpq-dev python-dev libxml2-dev libxslt-dev libevent-dev libsasl2-dev libldap2-dev libjpeg-dev node-less -y
+
+pip3 install --upgrade pip
+pip3 install --upgrade virtualenv
+
+pip3 install pbr funcsigs
+pip install phonenumbers pyOpenSSL
+
+adduser developer sudo
+
+service postgresql start
+su postgres
+createuser -dEP developer
+
+psql
+update pg_database set datallowconn = TRUE where datname = 'template0';
+\c template0
+update pg_database set datistemplate = FALSE where datname = 'template1';
+drop database template1;
+create database template1 with template = template0 encoding = 'UTF8';
+update pg_database set datistemplate = TRUE where datname = 'template1';
+\c template1
+update pg_database set datallowconn = FALSE where datname = 'template0';
+\q
+exit
+
+sudo apt-get install -y build-essential
+curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+apt-get install -y nodejs
+npm install -g less
+
+cd /home/developer
+git clone --single-branch https://github.com/odoo/odoo/ -b 11.0
+cd /home/developer/odoo
+pip install -r requirements.txt
