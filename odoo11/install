@@ -31,7 +31,7 @@ update pg_database set datallowconn = FALSE where datname = 'template0';
 exit
 
 cd /opt/odoo
-git clone --single-branch https://github.com/odoo/odoo/ -b 10.0
+git clone --single-branch https://github.com/odoo/odoo/ -b 11.0
 mkdir /opt/odoo/addons
 cd /opt/odoo/addons
 # git clone https://github.com/odoo/enterprise
