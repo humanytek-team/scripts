@@ -11,7 +11,8 @@ pip3 install --upgrade virtualenv
 pip3 install pbr funcsigs
 pip install phonenumbers pyOpenSSL
 
-adduser developer sudo
+adduser developer
+usermod -aG sudo developer
 
 service postgresql start
 su postgres
