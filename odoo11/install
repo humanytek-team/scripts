@@ -5,8 +5,6 @@ apt-get install bash-completion git python3 python3-pip sudo vim postgresql -y
 apt-get install libpq-dev python-dev libxml2-dev libxslt-dev libevent-dev libsasl2-dev libldap2-dev libjpeg-dev node-less -y
 # Dependencias MX
 apt-get install xmlstarlet libzbar-dev -y
-pip3 install --upgrade pip
-pip3 install --upgrade virtualenv
 # Dependencias Odoo
 pip3 install pbr funcsigs
 # Dependencias MX
