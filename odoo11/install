@@ -12,6 +12,7 @@ pip3 install xmltodict M2Crypto simplejson SOAPpy qrtools zbar
 
 adduser --system --home=/opt/odoo --group odoo
 
+service postgresql start
 su postgres
 createuser -deEPRS odoo
 
